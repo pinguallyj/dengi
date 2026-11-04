@@ -173,6 +173,21 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-
 .sum:first-child{border-top:0}
 .sum.total{font-weight:700;font-size:16px;border-top:2px solid var(--ink);margin-top:4px;padding-top:10px}
 
+.plegend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:8px}
+.plegend span{display:inline-flex;align-items:center;gap:6px}
+.plegend i{display:inline-block;width:16px;height:3px;border-radius:2px}
+.plegend i.dash{background:repeating-linear-gradient(90deg,var(--accent) 0 5px,transparent 5px 8px);opacity:.7}
+.plegend i.goal{background:repeating-linear-gradient(90deg,var(--good) 0 2px,transparent 2px 5px);height:2px}
+.scen{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.scen > div{background:var(--sunk);border-radius:12px;padding:10px 12px;min-width:0}
+.scen .v{font-weight:700;font-size:17px;margin:2px 0 4px}
+.scen small{font-size:12px;color:var(--muted);display:block}
+@media (max-width:420px){.scen{grid-template-columns:1fr}}
+.wadd{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:8px;margin-top:12px}
+.winput{border-color:transparent;background:transparent;padding:6px 8px}
+.winput:hover{border-color:var(--line)}
+.wprice{width:100px;flex:none;text-align:right;font-weight:600}
+@media (max-width:420px){.wprice{width:84px}.chk .btn{padding:7px 9px}}
 /* import */
 textarea{min-height:150px;resize:vertical;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .imp{width:100%;border-collapse:collapse;font-size:13.5px}
@@ -185,8 +200,8 @@ textarea{min-height:150px;resize:vertical;font-size:13px;font-family:ui-monospac
 /* tabs + fab */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:color-mix(in srgb,var(--surface) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line);
   padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));display:flex;justify-content:center}
-.tabs .in{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;width:100%;max-width:620px}
-.tabs a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--muted);font-size:11px;font-weight:600;padding:6px 2px;border-radius:10px}
+.tabs .in{display:grid;grid-template-columns:repeat(6,1fr);gap:2px;width:100%;max-width:620px}
+.tabs a{display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--muted);font-size:10.5px;font-weight:600;padding:6px 2px;border-radius:10px}
 .tabs a svg{width:22px;height:22px}
 .tabs a.on{color:var(--accent)}
 .fab{position:fixed;z-index:21;right:max(18px,calc(env(safe-area-inset-right,0px) + 18px));bottom:calc(76px + env(safe-area-inset-bottom,0px));width:60px;height:60px;border-radius:20px;border:0;background:var(--accent);color:var(--accent-ink);
@@ -248,6 +263,7 @@ textarea{min-height:150px;resize:vertical;font-size:13px;font-family:ui-monospac
     <a href="#history" data-tab="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg>Операции</a>
     <a href="#money" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 15h2"/></svg>Накопления</a>
     <a href="#plan" data-tab="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h6l1 2h3v14H5V6h3z"/><path d="M9 12l2 2 4-4"/></svg>План</a>
+    <a href="#wish" data-tab="wish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 1 0-7.1 7.1L12 21.5l8.8-8.8a5 5 0 0 0 0-7.1z"/></svg>Хочу</a>
     <a href="#import" data-tab="import"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 21h16"/></svg>Импорт</a>
   </div>
 </nav>
@@ -274,7 +290,7 @@ const ALLCATS = {}; [...EXP,...FIXEDCATS,...INC].forEach(c=>ALLCATS[c.id]=c);
 const MN = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 const MG = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const MS = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
-const DEFAULT_CFG = {v:1,incomes:[],fixed:[],credits:[],owed:[],limits:{},bal:{freedom:0,piggy:0,card:0,piggyTarget:0},goal:{amount:0}};
+const DEFAULT_CFG = {v:1,wish:[],incomes:[],fixed:[],credits:[],owed:[],limits:{},bal:{freedom:0,piggy:0,card:0,piggyTarget:0},goal:{amount:0}};
 
 /* ---------- утилиты ---------- */
 const $ = s => document.querySelector(s);
@@ -433,7 +449,7 @@ function requestRender(){
 }
 document.addEventListener('focusout',()=>{ setTimeout(()=>{ if(renderPending){ const ae=document.activeElement; if(!(ae && $('#view').contains(ae) && /INPUT|SELECT|TEXTAREA/.test(ae.tagName))){ renderPending=false; render(); } } },0); });
 
-function tab(){ const h=(location.hash||'').slice(1); return ['month','history','money','plan','import'].includes(h)?h:'month'; }
+function tab(){ const h=(location.hash||'').slice(1); return ['month','history','money','wish','plan','import'].includes(h)?h:'month'; }
 function render(){
   const t=tab();
   document.querySelectorAll('.tabs a').forEach(a=>a.classList.toggle('on',a.dataset.tab===t));
@@ -442,7 +458,7 @@ function render(){
   const v=$('#view');
   if(!cfg){ v.innerHTML='<div class="card empty"><b>Загружаю твои цифры</b>Секунду — подтягиваю план и операции.</div>'; return; }
   if(t!=='money' && !(cfg.incomes||[]).length && !Object.keys(txMap).length && !(cfg.bal&&cfg.bal.updated)){ v.innerHTML='<div class="card empty"><b>Здесь пока пусто</b>Если у тебя есть файл копии — открой «Накопления» и нажми «Загрузить копию». Или заполни всё во вкладке «План».</div><a class="btn primary block" href="#money" style="text-align:center;text-decoration:none">Загрузить копию</a>'; return; }
-  v.innerHTML = ({month:vMonth,history:vHistory,money:vMoney,plan:vPlan,import:vImport})[t]();
+  v.innerHTML = ({month:vMonth,history:vHistory,money:vMoney,wish:vWish,plan:vPlan,import:vImport})[t]();
 }
 function catDot(id){ return '<i class="cdot" style="background:var(--c-'+(ALLCATS[id]&&INC.find(c=>c.id===id)?'inc':id)+')"></i>'; }
 
@@ -566,6 +582,22 @@ function vMoney(){
       '<p class="small" style="margin:10px 0 0">'+(left>0?'Осталось '+money(left)+' (депозит + копилка). '+(per>0?'Если откладывать по плану '+money(per)+' в месяц — примерно '+Math.ceil(left/per)+' '+plural(Math.ceil(left/per),'месяц','месяца','месяцев')+'.':'По текущему плану отложить не получается — проверь вкладку «План».'):'Цель достигнута.')+'</p></section>';
   }
 
+
+  // прогноз на год
+  if((cfg.incomes||[]).length){
+    const P=projection(), e=P.pts[P.pts.length-1], endM=e.m;
+    const diff=e.Bn-e.A;
+    h+='<section class="card" id="proj"><div class="sec-h"><h2>Прогноз на год</h2><span class="small muted">до '+esc(MG[Number(endM.slice(5))-1])+' '+endM.slice(0,4)+'</span></div>'+
+      '<div class="two" style="margin-bottom:12px"><div class="field"><label for="pr-living">На жизнь в месяц</label><input id="pr-living" data-path="proj.living" data-num="1" inputmode="numeric" class="num" value="'+esc(nf.format(P.living))+'"></div>'+
+      '<div class="field"><label for="pr-rate">Ставка депозита, %</label><input id="pr-rate" data-path="proj.rate" data-num="1" inputmode="decimal" class="num" value="'+esc(P.rate)+'"></div></div>'+
+      projChart(P)+
+      '<div class="plegend"><span><i style="background:var(--c-cafe)"></i>Закрыть всё сейчас</span><span><i style="background:var(--accent)"></i>Платить рассрочки</span><span><i class="dash"></i>…минус остаток рассрочек</span>'+(Number(cfg.goal&&cfg.goal.amount)?'<span><i class="goal"></i>цель</span>':'')+'</div>'+
+      '<div class="scen"><div><div class="label" style="color:var(--c-cafe)">Закрыть всё сейчас</div><div class="v num">'+money(e.A)+'</div><small>Сразу после погашения на счетах останется '+money(P.S0-P.debt0)+'. Через год долгов ноль.</small></div>'+
+      '<div><div class="label" style="color:var(--accent)">Платить рассрочки</div><div class="v num">'+money(e.B)+'</div><small>Ещё будешь должен '+money(e.B-e.Bn)+'. Чистыми '+money(e.Bn)+'.</small></div></div>'+
+      '<p class="small" style="margin:12px 0 0">'+(Math.abs(diff)<1000?'Разницы почти нет.':(diff>0?'Платить рассрочки выгоднее на <b class="num">'+money(diff)+'</b> — это проценты по депозиту на деньги, которые не ушли на досрочное погашение.':'Закрыть сейчас выгоднее на <b class="num">'+money(-diff)+'</b>.'))+'</p>'+
+      '<p class="small muted" style="margin:6px 0 0">Прогноз верен, только если на жизнь уходит столько, сколько указано выше. Поставь реальную цифру — увидишь, как меняется год. Возвраты долгов сюда не входят.</p></section>';
+  }
+
   // чистая позиция
   h+='<section class="card"><div class="sec-h"><h2>Если всё вернут и всё выплатить</h2></div>'+
     '<div class="sum"><span>Деньги сейчас</span><b class="num">'+money(total)+'</b></div>'+
@@ -607,6 +639,46 @@ function vMoney(){
 
   h+='<section class="card"><div class="sec-h"><h2>Резервная копия</h2></div><p class="small muted" style="margin:0 0 10px">Все записи хранятся только на этом телефоне. Раз в месяц скачивай копию — если браузер почистит данные, её можно будет загрузить обратно.</p><div class="row" style="flex-wrap:wrap"><button type="button" class="btn" data-act="exportjson">Скачать копию</button><label class="btn" for="restore-file" style="cursor:pointer">Загрузить копию</label><input id="restore-file" type="file" accept=".json,application/json" hidden><button type="button" class="btn" data-act="exportcsv">Траты месяца в CSV</button></div></section>';
   return h;
+}
+function projection(){
+  const p=cfg.proj||{}, cm=curM(), S=stats(cm);
+  const rate = (p.rate!=null && p.rate!=='') ? Number(p.rate) : 15;
+  const living = (p.living!=null && p.living!=='' && Number(p.living)>0) ? Number(p.living) : S.varPlan;
+  const b=cfg.bal||{}, S0=Number(b.freedom||0)+Number(b.piggy||0)+Number(b.card||0);
+  const fixed=(cfg.fixed||[]).reduce((s,f)=>s+Number(f.amount||0),0);
+  const debtFrom = m => (cfg.credits||[]).reduce((s,c)=>s+creditRemaining(c,m),0);
+  const debt0=debtFrom(cm), k=1+rate/1200;
+  let A=S0-debt0, B=S0; const pts=[{m:cm,A,B,Bn:B-debt0}];
+  for(let i=0;i<12;i++){
+    const m=addM(cm,i);
+    const inc=(cfg.incomes||[]).reduce((s,x)=>s+incomeExpected(x,m),0);
+    const net=inc-fixed-living;
+    const cr=(cfg.credits||[]).reduce((s,c)=>s+creditFor(c,m),0);
+    A=A*k+net; B=B*k+net-cr;
+    const nm=addM(m,1); pts.push({m:nm,A,B,Bn:B-debtFrom(nm)});
+  }
+  return {pts,rate,living,S0,debt0};
+}
+function projChart(P){
+  const W=560,H=220,pl=52,pr=12,pt=12,pb=24, pts=P.pts, goal=Number(cfg.goal&&cfg.goal.amount||0);
+  const vals=pts.flatMap(p=>[p.A,p.B,p.Bn]).concat(goal?[goal]:[]);
+  const lo=Math.min(0,...vals), hiRaw=Math.max(...vals,1);
+  const step = hiRaw-lo>4e6?1e6:(hiRaw-lo>1.5e6?5e5:2.5e5);
+  const hi=Math.ceil(hiRaw/step)*step, lo2=Math.floor(lo/step)*step;
+  const x=i=>pl+(W-pl-pr)*i/(pts.length-1), y=v=>pt+(H-pt-pb)*(hi-v)/(hi-lo2||1);
+  const fmtY=v=>v===0?'0':(Math.abs(v)>=1e6?(v/1e6).toLocaleString('ru-RU',{maximumFractionDigits:1})+' млн':Math.round(v/1000)+'к');
+  let s='<div class="chart"><svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Прогноз накоплений на год по двум сценариям">';
+  for(let v=lo2; v<=hi+1; v+=step){ s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="var(--line)"/><text x="'+(pl-6)+'" y="'+(y(v)+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+fmtY(v)+'</text>'; }
+  if(goal) s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(goal)+'" y2="'+y(goal)+'" stroke="var(--good)" stroke-width="1.5" stroke-dasharray="2 4"/>';
+  pts.forEach((p,i)=>{ if(i%2===0 || i===pts.length-1) s+='<text x="'+x(i)+'" y="'+(H-6)+'" text-anchor="middle" font-size="10.5" fill="var(--muted)">'+mShort(p.m)+'</text>'; });
+  const path=key=>pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p[key]).toFixed(1)).join(' ');
+  s+='<path d="'+path('Bn')+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="5 4" opacity=".6"/>';
+  s+='<path d="'+path('B')+'" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round"/>';
+  s+='<path d="'+path('A')+'" fill="none" stroke="var(--c-cafe)" stroke-width="2.5" stroke-linejoin="round"/>';
+  const L=pts.length-1;
+  [['A','var(--c-cafe)'],['B','var(--accent)']].forEach(([k,c])=>{ s+='<circle cx="'+x(L)+'" cy="'+y(pts[L][k])+'" r="4" fill="'+c+'"/>'; });
+  s+='<circle cx="'+x(0)+'" cy="'+y(pts[0].A)+'" r="3.5" fill="var(--c-cafe)"><title>Сразу после погашения: '+money(pts[0].A)+'</title></circle>';
+  return s+'</svg></div>';
 }
 function creditChart(months){
   if(!months.length) return '';
@@ -665,6 +737,70 @@ function vPlan(){
   return h;
 }
 
+function poolNow(){
+  const b=cfg.bal||{}; let p=Number(b.card||0)+Number(b.piggy||0);
+  const up=b.updated||'', ts=Number(b.updatedAt||0);
+  if(up) txs().forEach(t=>{
+    if(t.s==='wish-none') return;
+    const after = (t.d||'')>up || ((t.d||'')===up && ts && Number(t.t||0)>ts);
+    if(after) p += t.k==='inc' ? Number(t.a||0) : -Number(t.a||0);
+  });
+  return p;
+}
+function monthRest(){
+  const cm=curM(), S=stats(cm);
+  const incomingLeft=(cfg.incomes||[]).reduce((s,i)=>s+Math.max(0,incomeExpected(i,cm)-(S.incBy[i.id]||0)),0);
+  const fixedLeft=(cfg.fixed||[]).filter(f=>!txMap['fx_'+cm+'_'+f.id]).reduce((s,f)=>s+Number(f.amount||0),0);
+  const credLeft=(cfg.credits||[]).filter(c=>!txMap['fx_'+cm+'_'+c.id]).reduce((s,c)=>s+creditFor(c,cm),0);
+  const livingLeft=Math.max(0,S.varPlan-S.varSpent);
+  return {S,incomingLeft,fixedLeft,credLeft,livingLeft,out:fixedLeft+credLeft+livingLeft};
+}
+function vWish(){
+  const items=cfg.wish||[], sel=items.filter(w=>w.on), sum=sel.reduce((s,w)=>s+Number(w.price||0),0);
+  const b=cfg.bal||{}, target=Number(b.piggyTarget||0);
+  const pool=poolNow(), R=monthRest(), end=pool+R.incomingLeft-R.out, endAfter=end-sum;
+  const rate=(cfg.proj&&cfg.proj.rate!=null&&cfg.proj.rate!=='')?Number(cfg.proj.rate):15;
+  const yearLoss=sum*Math.pow(1+rate/1200,12);
+  const perDay=R.S.varPlan/daysIn(curM());
+  const save=R.S.savePlan;
+  let V;
+  if(!items.length) V={cls:'none',state:'Вишлист',h:'Добавь, что хочешь купить',p:'Впиши вещь и цену внизу, потом отметь галочкой — я посчитаю, хватит ли денег с карты и копилки.'};
+  else if(!sel.length) V={cls:'none',state:'Ничего не выбрано',h:'Отметь, что хочешь купить',p:'На карте и в копилке сейчас примерно '+money(pool)+'. Депозит в расчёт не берём.'};
+  else if(sum>pool){
+    if(endAfter>=0) V={cls:'warn',state:'Не сейчас',h:'Не хватает '+money(sum-pool),p:'Сейчас на карте и в копилке ~'+money(pool)+'. После зарплаты, стипендии и всех платежей месяца хватит — останется '+money(endAfter)+'.'};
+    else { const need=sum-Math.max(0,end); const n=save>0?Math.ceil(need/save):0;
+      V={cls:'bad',state:'Пока нет',h:'Не хватает '+money(sum-pool),p:'Даже к концу месяца не хватит '+money(-endAfter)+'. '+(n?'Если откладывать по плану, накопишь примерно за '+n+' '+plural(n,'месяц','месяца','месяцев')+'.':'По текущему плану откладывать не получается.')}; }
+  }
+  else if(endAfter<0) V={cls:'bad',state:'Опасно',h:'Купить можешь, но не хватит на месяц',p:'После покупки до конца месяца не хватит '+money(-endAfter)+' на аренду, кредиты и жизнь.'};
+  else if(target && endAfter<target) V={cls:'warn',state:'Можно, но',h:'Копилка просядет',p:'К концу месяца на карте и в копилке будет '+money(endAfter)+' — до '+money(target)+' не хватит '+money(target-endAfter)+'.'};
+  else V={cls:'good',state:'Можно брать',h:'Хватает',p:'После покупки и всех платежей месяца на карте и в копилке останется '+money(endAfter)+(target?', копилка останется полной.':'.')};
+
+  let h='<section class="verdict '+V.cls+'"><div class="state"><i class="dot"></i>'+esc(V.state)+'</div><h1>'+esc(V.h)+'</h1><p>'+esc(V.p)+'</p>';
+  if(sel.length) h+='<div class="perday"><span class="pill">Выбрано <b class="num">'+sel.length+'</b> на <b class="num">'+money(sum)+'</b></span>'+(perDay>0?'<span class="pill num">≈ '+Math.round(sum/perDay)+' дн. трат на жизнь</span>':'')+'</div>';
+  h+='</section>';
+
+  if(items.length){
+    h+='<section class="card"><div class="sec-h"><h2>Если купить сейчас</h2><span class="small muted">депозит не трогаем</span></div>'+
+      '<div class="sum"><span>Карта + копилка сейчас</span><b class="num">'+money(pool)+(sum?' → '+money(pool-sum):'')+'</b></div>'+
+      '<div class="sum"><span>Ещё придёт в этом месяце</span><b class="num" style="color:var(--good)">+'+money(R.incomingLeft)+'</b></div>'+
+      '<div class="sum"><span>Ещё уйдёт: аренда, кредиты, жизнь</span><b class="num" style="color:var(--bad)">−'+money(R.out)+'</b></div>'+
+      '<div class="sum total"><span>К концу месяца</span><span class="num" style="color:var(--'+(endAfter<0?'bad':(target&&endAfter<target?'warn':'good'))+')">'+money(endAfter)+'</span></div>'+
+      (target?'<div class="small muted" style="margin-top:6px">Без покупки было бы '+money(end)+'. Цель копилки — '+money(target)+'.</div>':'')+
+      (sum?'<div class="note" style="margin-top:12px">Через год накоплений будет меньше примерно на <b class="num" style="color:var(--ink)">'+money(yearLoss)+'</b> — сама покупка плюс проценты, которые эти деньги не заработают.</div>':'')+
+      '<p class="small muted" style="margin:10px 0 0">Считаю от балансов на '+(b.updated?dLabel(b.updated):'—')+' плюс всё, что записано после. Если давно не обновлял — обнови во вкладке «Накопления».</p></section>';
+  }
+
+  h+='<section class="card"><div class="sec-h"><h2>Хочу</h2><span class="small muted num">'+(items.length?'всего '+money(items.reduce((s,w)=>s+Number(w.price||0),0)):'')+'</span></div><div>';
+  items.forEach((w,i)=>{
+    h+='<div class="chk"><button type="button" class="tick'+(w.on?' on':'')+'" data-act="wishtoggle" data-i="'+i+'" aria-pressed="'+!!w.on+'" aria-label="Хочу купить: '+esc(w.name)+'">'+(w.on?CHECK:'')+'</button>'+
+      '<div class="t"><input id="w-n-'+i+'" class="winput" data-path="wish.'+i+'.name" value="'+esc(w.name)+'" aria-label="Название"></div>'+
+      '<input id="w-p-'+i+'" class="winput num wprice" data-path="wish.'+i+'.price" data-num="1" inputmode="numeric" value="'+esc(nf.format(w.price||0))+'" aria-label="Цена">'+
+      '<button type="button" class="btn" data-act="wishbuy" data-i="'+i+'">Купил</button><button type="button" class="x" data-act="wishrm" data-i="'+i+'" aria-label="Удалить">×</button></div>';
+  });
+  if(!items.length) h+='<div class="note">Список пуст. Например: «Кроссовки — 45 000».</div>';
+  h+='</div><div class="wadd"><input id="wish-name" placeholder="Что хочу" aria-label="Что хочу"><input id="wish-price" class="num" inputmode="numeric" placeholder="Цена" aria-label="Цена"><button type="button" class="btn primary" data-act="wishadd">Добавить</button></div></section>';
+  return h;
+}
 function vImport(){
   let h='<section class="card stack" style="gap:12px"><div><h2 style="font-size:16px">Загрузить выписку</h2><p class="small muted" style="margin:6px 0 0">Раз в месяц: в Kaspi открой выписку по карте за месяц, выдели весь текст и вставь сюда. Подойдёт и CSV-файл из любого банка. Траты сами разложатся по категориям — проверь и поправь, где нужно.</p></div>'+
     '<textarea id="imp-text" placeholder="04.11.26   - 2 990,00 ₸   Покупки   MAGNUM&#10;03.11.26   + 7 000,00 ₸   Пополнение   С Kaspi Gold&#10;03.11.26   - 1 450,00 ₸   Покупки   Yandex Go"></textarea>'+
@@ -809,7 +945,7 @@ document.addEventListener('click',async e=>{
   }
   else if(act==='bal') balSheet();
   else if(act==='savebal'){
-    const nb=Object.assign({},cfg.bal); ['freedom','piggy','card','piggyTarget'].forEach(k=>nb[k]=parseNum($('#b-'+k).value)); nb.updated=today();
+    const nb=Object.assign({},cfg.bal); ['freedom','piggy','card','piggyTarget'].forEach(k=>nb[k]=parseNum($('#b-'+k).value)); nb.updated=today(); nb.updatedAt=Date.now();
     cfg.bal=nb; store.saveCfg(); store.setSnap(curM(),{freedom:nb.freedom,piggy:nb.piggy,card:nb.card,d:today()}); closeSheet(); toast('Балансы обновлены');
   }
   else if(act==='owedadd') owedSheet();
@@ -830,6 +966,19 @@ document.addEventListener('click',async e=>{
     store.saveCfg(); render();
   }
   else if(act==='rmrow'){ cfg[b.dataset.list].splice(Number(b.dataset.i),1); store.saveCfg(); render(); }
+  else if(act==='wishadd'){
+    const n=$('#wish-name').value.trim(), p=parseNum($('#wish-price').value);
+    if(!n||!p){ toast('Укажи, что это и сколько стоит'); return; }
+    cfg.wish=(cfg.wish||[]).concat({id:uid('w'),name:n,price:p,on:true}); store.saveCfg(); render();
+    setTimeout(()=>{ const el=$('#wish-name'); if(el) el.focus(); },0);
+  }
+  else if(act==='wishtoggle'){ const w=(cfg.wish||[])[Number(b.dataset.i)]; if(!w) return; w.on=!w.on; store.saveCfg(); render(); }
+  else if(act==='wishrm'){ cfg.wish.splice(Number(b.dataset.i),1); store.saveCfg(); render(); }
+  else if(act==='wishbuy'){
+    const w=(cfg.wish||[])[Number(b.dataset.i)]; if(!w) return;
+    store.setTx(uid('t'),{d:today(),a:Number(w.price||0),k:'exp',c:'shop',n:w.name,s:'wish',t:Date.now()});
+    cfg.wish.splice(Number(b.dataset.i),1); store.saveCfg(); render(); toast('Записал покупку: '+w.name);
+  }
   else if(act==='parse'){ const t=$('#imp-text').value; importRows=parseStatement(t); if(!importRows.length) toast('Не нашёл операций — проверь формат'); render(); }
   else if(act==='doimport'){
     const sel=importRows.filter(r=>r.on&&!r.dup); b.disabled=true; b.textContent='Добавляю…';
@@ -876,7 +1025,7 @@ document.addEventListener('change',e=>{
     const fr=new FileReader(); fr.onload=()=>{ $('#imp-text').value=String(fr.result||''); importRows=parseStatement(String(fr.result||'')); if(!importRows.length) toast('Не нашёл операций в файле'); render(); }; fr.readAsText(el.files[0]);
   }
 });
-document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.id==='f-amount'){ e.preventDefault(); $('#f-note').focus(); } });
+document.addEventListener('keydown',e=>{ if(e.key==='Enter' && e.target.id==='f-amount'){ e.preventDefault(); $('#f-note').focus(); } if(e.key==='Enter' && (e.target.id==='wish-price'||e.target.id==='wish-name')){ e.preventDefault(); if(e.target.id==='wish-name') $('#wish-price').focus(); else { const bb=document.querySelector('[data-act="wishadd"]'); if(bb) bb.click(); } } });
 window.addEventListener('hashchange',()=>{ window.scrollTo(0,0); render(); });
 
 /* ---------- старт ---------- */
