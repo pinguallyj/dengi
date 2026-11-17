@@ -22,7 +22,7 @@
   --bg:#F2F3F7; --surface:#FFFFFF; --sunk:#E8EAF1; --ink:#141824; --muted:#5C6376; --line:#DCE0EA;
   --accent:#2B46D4; --accent-ink:#FFFFFF; --accent-soft:#E2E7FF;
   --good:#1F7D45; --good-soft:#DFF1E5; --warn:#A86E05; --warn-soft:#FAEFD6; --bad:#BF372D; --bad-soft:#FAE2DF;
-  --c-food:#2F8F6B; --c-cafe:#D0702A; --c-taxi:#C9A100; --c-small:#7A5CC9; --c-shop:#C2457E; --c-fun:#2F86C9;
+  --c-food:#2F8F6B; --c-cafe:#D0702A; --c-taxi:#C9A100; --c-small:#7A5CC9; --c-health:#0E9C9C; --c-shop:#C2457E; --c-fun:#2F86C9;
   --c-gift:#D14F4F; --c-transfer:#5E6B85; --c-lend:#8C6A3F; --c-cash:#4F8A8B; --c-other:#8A8FA0; --c-fixed:#2B46D4; --c-credit:#3B3F8F;
   --c-inc:#1F7D45;
   --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
@@ -33,7 +33,7 @@
   --bg:#0D1017; --surface:#161A24; --sunk:#1E2330; --ink:#ECEEF4; --muted:#9AA1B4; --line:#283041;
   --accent:#8399FF; --accent-ink:#0D1017; --accent-soft:#1F2748;
   --good:#52C47F; --good-soft:#14301F; --warn:#E5B24F; --warn-soft:#33290F; --bad:#F27A70; --bad-soft:#3A1B19;
-  --c-food:#4FC197; --c-cafe:#F0944E; --c-taxi:#E6C540; --c-small:#A68CF0; --c-shop:#EE79AE; --c-fun:#5DAEEE;
+  --c-food:#4FC197; --c-cafe:#F0944E; --c-taxi:#E6C540; --c-small:#A68CF0; --c-health:#4FD1CF; --c-shop:#EE79AE; --c-fun:#5DAEEE;
   --c-gift:#F07D7D; --c-transfer:#98A3BC; --c-lend:#C29B6B; --c-cash:#7CC0C1; --c-other:#A3A8B8; --c-fixed:#8399FF; --c-credit:#A9A6F5; --c-inc:#52C47F;
   color-scheme:dark;
 }}
@@ -41,7 +41,7 @@
   --bg:#0D1017; --surface:#161A24; --sunk:#1E2330; --ink:#ECEEF4; --muted:#9AA1B4; --line:#283041;
   --accent:#8399FF; --accent-ink:#0D1017; --accent-soft:#1F2748;
   --good:#52C47F; --good-soft:#14301F; --warn:#E5B24F; --warn-soft:#33290F; --bad:#F27A70; --bad-soft:#3A1B19;
-  --c-food:#4FC197; --c-cafe:#F0944E; --c-taxi:#E6C540; --c-small:#A68CF0; --c-shop:#EE79AE; --c-fun:#5DAEEE;
+  --c-food:#4FC197; --c-cafe:#F0944E; --c-taxi:#E6C540; --c-small:#A68CF0; --c-health:#4FD1CF; --c-shop:#EE79AE; --c-fun:#5DAEEE;
   --c-gift:#F07D7D; --c-transfer:#98A3BC; --c-lend:#C29B6B; --c-cash:#7CC0C1; --c-other:#A3A8B8; --c-fixed:#8399FF; --c-credit:#A9A6F5; --c-inc:#52C47F;
   color-scheme:dark;
 }
@@ -277,10 +277,12 @@ textarea{min-height:150px;resize:vertical;font-size:13px;font-family:ui-monospac
 /* ---------- справочники ---------- */
 const EXP = [
   {id:'food',name:'Еда и продукты'},{id:'cafe',name:'Кафе и доставка'},{id:'taxi',name:'Такси'},
-  {id:'small',name:'Мелочи'},{id:'shop',name:'Покупки и одежда'},{id:'fun',name:'Развлечения и подписки'},
+  {id:'small',name:'Мелочи'},{id:'health',name:'Здоровье'},{id:'shop',name:'Покупки и одежда'},{id:'fun',name:'Развлечения и подписки'},
   {id:'gift',name:'Подарки'},{id:'transfer',name:'Переводы людям'},{id:'lend',name:'Дал в долг'},
   {id:'cash',name:'Снял наличными'},{id:'other',name:'Другое'}
 ];
+/* Траты, без которых нельзя: видны отдельно, но не влияют на статус «На жизнь» */
+const OWN = new Set(['health']);
 const FIXEDCATS = [{id:'fixed',name:'Обязательные'},{id:'credit',name:'Кредиты'}];
 const INC = [
   {id:'salary',name:'Зарплата'},{id:'stipend',name:'Стипендия'},{id:'bf',name:'От парня'},
@@ -412,14 +414,15 @@ function stats(m){
   const fixedPlan = (cfg.fixed||[]).reduce((s,f)=>s+Number(f.amount||0),0);
   const creditPlan = (cfg.credits||[]).reduce((s,c)=>s+creditFor(c,m),0);
   const limits = cfg.limits||{};
-  const varPlan = EXP.reduce((s,c)=>s+Number(limits[c.id]||0),0);
+  const varPlan = EXP.filter(c=>!OWN.has(c.id)).reduce((s,c)=>s+Number(limits[c.id]||0),0);
+  const healthPlan = Number(limits.health||0), healthSpent = byCat.health||0;
   const incPlan = (cfg.incomes||[]).reduce((s,i)=>s+incomeExpected(i,m),0);
-  const varSpent = exp.filter(t=>t.c!=='fixed'&&t.c!=='credit').reduce((s,t)=>s+Number(t.a||0),0);
-  const unplanned = EXP.filter(c=>!Number(limits[c.id]||0)).reduce((s,c)=>s+(byCat[c.id]||0),0);
+  const varSpent = exp.filter(t=>t.c!=='fixed'&&t.c!=='credit'&&!OWN.has(t.c)).reduce((s,t)=>s+Number(t.a||0),0);
+  const unplanned = EXP.filter(c=>!OWN.has(c.id)&&!Number(limits[c.id]||0)).reduce((s,c)=>s+(byCat[c.id]||0),0);
   const cm=curM(); let frac=1, day=daysIn(m), state='past';
   if(m===cm){ day=new Date().getDate(); frac=day/daysIn(m); state='now'; } else if(mIdx(m)>mIdx(cm)){ frac=0; day=0; state='future'; }
-  return {list,exp,inc,byCat,incBy,expTotal:sum(exp),incTotal:sum(inc),fixedPlan,creditPlan,varPlan,incPlan,varSpent,unplanned,frac,day,state,
-    savePlan: incPlan-fixedPlan-creditPlan-varPlan};
+  return {list,exp,inc,byCat,incBy,expTotal:sum(exp),incTotal:sum(inc),fixedPlan,creditPlan,varPlan,incPlan,varSpent,unplanned,healthPlan,healthSpent,frac,day,state,
+    savePlan: incPlan-fixedPlan-creditPlan-varPlan-healthPlan};
 }
 function verdict(S,m){
   if(!S.varPlan) return {cls:'none',state:'Нет плана',h:'Задай лимиты',p:'Во вкладке «План» укажи, сколько хочешь тратить на еду, такси и мелочи. Тогда здесь появится ответ, укладываешься ты или нет.'};
@@ -479,7 +482,7 @@ function vMonth(){
      '<div class="planline">По плану в этом месяце отложить: <b class="num" style="color:var(--ink)">'+money(S.savePlan)+'</b></div></div>';
 
   // категории с лимитом
-  const planned = EXP.filter(c=>Number(L[c.id]||0)>0);
+  const planned = EXP.filter(c=>!OWN.has(c.id)&&Number(L[c.id]||0)>0);
   h+='<section class="card"><div class="sec-h"><h2>На жизнь</h2><span class="small muted num">'+money(S.varSpent)+' из '+money(S.varPlan)+'</span></div>';
   if(!planned.length) h+='<div class="note">Лимитов пока нет. Задай их во вкладке «План».</div>';
   planned.forEach(c=>{
@@ -491,8 +494,20 @@ function vMonth(){
   if(planned.length && S.state==='now') h+='<div class="legend"><i></i>отметка — сколько «положено» к сегодняшнему дню</div>';
   h+='</section>';
 
+  // здоровье — отдельно, на статус не влияет
+  const hl=S.exp.filter(t=>t.c==='health').sort((a,b)=>(b.d||'').localeCompare(a.d||'')||Number(b.t||0)-Number(a.t||0));
+  if(hl.length || S.healthPlan){
+    const hp=S.healthPlan, hs=S.healthSpent;
+    h+='<section class="card"><div class="sec-h"><h2>Здоровье</h2><span class="small muted num">'+money(hs)+(hp?' из '+money(hp):'')+'</span></div>'+
+       '<p class="small muted" style="margin:0 0 6px">На статус не влияет: на этом не экономят. Но деньги это реальные — они учтены в «Ушло» и в том, сколько получится отложить.</p>';
+    if(hp) h+='<div class="bar" style="margin-bottom:6px"><i class="'+(hs>hp?'warn':'')+'" style="width:'+Math.min(100,hs/hp*100)+'%"></i></div>'+
+       (hs>hp?'<p class="small" style="margin:0 0 6px;color:var(--warn)">Резерв на здоровье превышен на '+money(hs-hp)+' — это уйдёт из того, что планировал отложить.</p>':'');
+    hl.forEach(t=>{ h+='<button type="button" class="tx" data-act="edit" data-id="'+esc(t.id)+'"><span class="cdot" style="background:var(--c-health)"></span><span class="t"><b>'+esc(t.n||'Здоровье')+'</b><small>'+esc(dLabel(t.d))+'</small></span><span class="a num">−'+money(t.a)+'</span></button>'; });
+    h+='</section>';
+  }
+
   // вне плана
-  const un = EXP.filter(c=>!Number(L[c.id]||0) && S.byCat[c.id]);
+  const un = EXP.filter(c=>!OWN.has(c.id) && !Number(L[c.id]||0) && S.byCat[c.id]);
   if(un.length){
     h+='<section class="card leak"><div class="sec-h"><h2>Вне плана</h2><span class="small num" style="color:var(--bad);font-weight:700">'+money(S.unplanned)+'</span></div>'+
        '<p class="small muted" style="margin:0 0 6px">Эти траты не заложены ни в один лимит. Обычно деньги «пропадают» именно здесь.</p>';
@@ -503,7 +518,7 @@ function vMonth(){
   }
 
   // куда утекает: топ по заметкам
-  const top={}; S.exp.filter(t=>t.c!=='fixed'&&t.c!=='credit').forEach(t=>{ const k=(t.n||ALLCATS[t.c]?.name||'Без заметки').trim(); const kk=k.toLowerCase(); top[kk]=top[kk]||{n:k,a:0,c:0,cat:t.c}; top[kk].a+=Number(t.a||0); top[kk].c++; });
+  const top={}; S.exp.filter(t=>t.c!=='fixed'&&t.c!=='credit'&&!OWN.has(t.c)).forEach(t=>{ const k=(t.n||ALLCATS[t.c]?.name||'Без заметки').trim(); const kk=k.toLowerCase(); top[kk]=top[kk]||{n:k,a:0,c:0,cat:t.c}; top[kk].a+=Number(t.a||0); top[kk].c++; });
   const topL=Object.values(top).sort((a,b)=>b.a-a.a).slice(0,6);
   h+='<section class="card"><div class="sec-h"><h2>Куда ушло больше всего</h2></div>';
   if(!topL.length) h+='<div class="empty"><b>Пока нет трат за '+esc(MN[Number(m.slice(5))-1].toLowerCase())+'</b>Нажми «+» и запиши первую — или загрузи выписку во вкладке «Импорт».</div>';
@@ -643,7 +658,7 @@ function vMoney(){
 function projection(){
   const p=cfg.proj||{}, cm=curM(), S=stats(cm);
   const rate = (p.rate!=null && p.rate!=='') ? Number(p.rate) : 15;
-  const living = (p.living!=null && p.living!=='' && Number(p.living)>0) ? Number(p.living) : S.varPlan;
+  const living = (p.living!=null && p.living!=='' && Number(p.living)>0) ? Number(p.living) : S.varPlan+S.healthPlan;
   const b=cfg.bal||{}, S0=Number(b.freedom||0)+Number(b.piggy||0)+Number(b.card||0);
   const fixed=(cfg.fixed||[]).reduce((s,f)=>s+Number(f.amount||0),0);
   const debtFrom = m => (cfg.credits||[]).reduce((s,c)=>s+creditRemaining(c,m),0);
@@ -702,6 +717,7 @@ function vPlan(){
     '<div class="sum"><span>Обязательные</span><b class="num">−'+money(S.fixedPlan)+'</b></div>'+
     '<div class="sum"><span>Кредиты</span><b class="num">−'+money(S.creditPlan)+'</b></div>'+
     '<div class="sum"><span>На жизнь (лимиты)</span><b class="num">−'+money(S.varPlan)+'</b></div>'+
+    (S.healthPlan?'<div class="sum"><span>Резерв на здоровье</span><b class="num">−'+money(S.healthPlan)+'</b></div>':'')+
     '<div class="sum total"><span>Остаётся отложить</span><span class="num" style="color:var(--'+(S.savePlan>=0?'good':'bad')+')">'+money(S.savePlan)+'</span></div></section>';
 
   h+='<section class="card"><div class="sec-h"><h2>Доходы</h2><button type="button" class="btn" data-act="addrow" data-list="incomes">Добавить</button></div><div class="pgrid c4"><span class="hd">Что</span><span class="hd">Сумма</span><span class="hd">Число</span><span></span>';
@@ -714,8 +730,11 @@ function vPlan(){
   h+='</div>'+((cfg.incomes||[]).some(r=>r.perWeek)?'<p class="small muted" style="margin:8px 0 0">Для переводов «от парня» третье поле — сколько раз в неделю.</p>':'')+'</section>';
 
   h+='<section class="card"><div class="sec-h"><h2>Лимиты на жизнь</h2><span class="small muted num">'+money(S.varPlan)+'</span></div><div class="pgrid" style="grid-template-columns:minmax(0,1fr) 130px">';
-  EXP.forEach(c=>{ h+='<label for="lim-'+c.id+'" class="row" style="gap:8px">'+catDot(c.id)+esc(c.name)+'</label><input id="lim-'+c.id+'" data-path="limits.'+c.id+'" data-num="1" inputmode="numeric" class="num" placeholder="0" value="'+esc(L[c.id]||'')+'">'; });
+  EXP.filter(c=>!OWN.has(c.id)).forEach(c=>{ h+='<label for="lim-'+c.id+'" class="row" style="gap:8px">'+catDot(c.id)+esc(c.name)+'</label><input id="lim-'+c.id+'" data-path="limits.'+c.id+'" data-num="1" inputmode="numeric" class="num" placeholder="0" value="'+esc(L[c.id]||'')+'">'; });
   h+='</div><p class="small muted" style="margin:10px 0 0">Где стоит 0 — траты в этой категории попадут в «Вне плана». Так проще увидеть, куда утекает.</p></section>';
+
+  h+='<section class="card"><div class="sec-h"><h2>Резерв на здоровье</h2></div><div class="pgrid" style="grid-template-columns:minmax(0,1fr) 130px"><label for="lim-health" class="row" style="gap:8px">'+catDot('health')+'В месяц, примерно</label><input id="lim-health" data-path="limits.health" data-num="1" inputmode="numeric" class="num" placeholder="0" value="'+esc(L.health||'')+'"></div>'+
+    '<p class="small muted" style="margin:10px 0 0">Врачи, лекарства, анализы. Это не лимит, а честная оценка: на статус не влияет, но вычитается из «Остаётся отложить» и из прогноза на год.</p></section>';
 
   h+='<section class="card"><div class="sec-h"><h2>Обязательные</h2><button type="button" class="btn" data-act="addrow" data-list="fixed">Добавить</button></div><div class="pgrid"><span class="hd">Что</span><span class="hd">Сумма</span><span></span>';
   (cfg.fixed||[]).forEach((r,i)=>{ h+='<input id="fx-n-'+i+'" data-path="fixed.'+i+'.name" value="'+esc(r.name)+'" aria-label="Название"><input id="fx-a-'+i+'" data-path="fixed.'+i+'.amount" data-num="1" inputmode="numeric" class="num" value="'+esc(r.amount)+'" aria-label="Сумма"><button type="button" class="x" data-act="rmrow" data-list="fixed" data-i="'+i+'" aria-label="Удалить">×</button>'; });
@@ -752,7 +771,7 @@ function monthRest(){
   const incomingLeft=(cfg.incomes||[]).reduce((s,i)=>s+Math.max(0,incomeExpected(i,cm)-(S.incBy[i.id]||0)),0);
   const fixedLeft=(cfg.fixed||[]).filter(f=>!txMap['fx_'+cm+'_'+f.id]).reduce((s,f)=>s+Number(f.amount||0),0);
   const credLeft=(cfg.credits||[]).filter(c=>!txMap['fx_'+cm+'_'+c.id]).reduce((s,c)=>s+creditFor(c,cm),0);
-  const livingLeft=Math.max(0,S.varPlan-S.varSpent);
+  const livingLeft=Math.max(0,S.varPlan-S.varSpent)+Math.max(0,S.healthPlan-S.healthSpent);
   return {S,incomingLeft,fixedLeft,credLeft,livingLeft,out:fixedLeft+credLeft+livingLeft};
 }
 function vWish(){
@@ -829,7 +848,7 @@ const RULES = [
   [/magnum|small|галмарт|galmart|anvar|анвар|metro|ramstore|supermarket|супермаркет|продукт|market|маркет|arbuz|airba fresh|toimart|astykzhan|daily/i,'food'],
   [/netflix|spotify|youtube|apple\.com|icloud|steam|playstation|кино|cinema|kinopark|chaplin|ivi|okko|yandex\s*plus|подписк/i,'fun'],
   [/zara|h&m|lc waikiki|defacto|mango|wildberries|ozon|kaspi\s*магазин|kaspi\s*shop|lamoda|sulpak|technodom|mechta|aliexpress|temu/i,'shop'],
-  [/apteka|аптек|europharma|biosfera/i,'small'],
+  [/apteka|аптек|europharma|biosfera|клиник|clinic|медцентр|медицин|medical|стомат|dental|dent|invitro|инвитро|kdl|олимп|olymp|лаборатор|анализ|врач|doctor|поликлин|больниц|hospital/i,'health'],
   [/kaspi\s*red|рассрочк|кредит|погашен/i,'credit']
 ];
 function guessCat(desc,type,kind){
